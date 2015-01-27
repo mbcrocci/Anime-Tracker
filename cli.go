@@ -51,6 +51,14 @@ func RunCli() {
 				}
 			},
 		},
+		{
+			Name:      "web",
+			ShortName: "w",
+			Usage:     "Start a server that serves the anime database",
+			Action: func(c *cli.Context) {
+				RunWeb()
+			},
+		},
 	}
 
 	app.RunAndExitOnError()
