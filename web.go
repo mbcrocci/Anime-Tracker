@@ -11,14 +11,18 @@ import (
 func RunWeb() {
 	log.Println("Starting server on http://localhost:3000")
 
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	// Root Hanlder
 	http.HandleFunc("/", IndexHandler)
 
 	// Add new anime handler
 	http.HandleFunc("/addAnime", AddHandler)
 
-	// Increment/Remove handler
-	http.HandleFunc("/action", ActionHandler)
+	// Increment handler
+	http.HandleFunc("/increment", IncrementHandler)
+
+	// Remove handler
+	http.HandleFunc("/remove", RemoveHandler)
 
 	http.ListenAndServe(":3000", nil)
 }
@@ -54,7 +58,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
-func ActionHandler(w http.ResponseWriter, r *http.Request) {
+func IncrementHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	if r.FormValue("Increment") == "" {
@@ -63,7 +67,15 @@ func ActionHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Can't increment: %v", err)
 		}
 
-	} else if r.FormValue("Remove") == "" {
+	}
+	// Redirect to root
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+}
+
+func RemoveHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	if r.FormValue("Remove") == "" {
 		log.Println("Removing " + r.Form["Title"][0])
 		if err := Remove(r.Form["Title"][0]); err != nil {
 			log.Println("Can't remove: %v", err)
