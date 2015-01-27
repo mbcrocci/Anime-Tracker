@@ -26,12 +26,15 @@
             <li><strong>Episode: </strong>{{ .Episode }}</li>
             <br>
 
+            <input type="hidden" name="Title" value="{{.Title}}">
             <input type="submit" value="Increment">
             <input type="submit" value="Remove">
         </form>
+    <br>
+    <br>
+    
     {{ end }}
     </ul>
-    
 </body>
 
 </html>

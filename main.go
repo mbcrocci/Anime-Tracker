@@ -23,11 +23,18 @@ func (a *Anime) Increment() {
 	a.Episode += 1
 }
 
+func (a *Anime) ChangeTitle(title string) {
+	a.Title = title
+}
+
+func (a *Anime) ChangeEpisode(episode int) {
+	a.Episode = episode
+}
+
 func addAnime(title, episode string) error {
 	ep, err := strconv.Atoi(episode)
 	if err != nil {
-		fmt.Println("Can't conver ", episode, "to string")
-		return err
+		return errors.New("Can't conver " + episode + "to string")
 	}
 	err = db.Insert(Anime{
 		Id:      bson.NewObjectId(),

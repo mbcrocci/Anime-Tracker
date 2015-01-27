@@ -20,18 +20,23 @@ func RunWeb() {
 	// Increment/Remove handler
 	http.HandleFunc("/action", ActionHandler)
 
-	http.ListenAndServe(":300", nil)
+	http.ListenAndServe(":3000", nil)
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// Load html file
-	index, err := ioutil.ReadFile("./template/index.html")
+	index, err := ioutil.ReadFile("./templates/index.html")
 	if err != nil {
 		log.Println("Can't read index.html")
 		os.Exit(2)
 	}
 	// Generate template
 	var templ = template.Must(template.New("index").Parse(string(index[:])))
+
+	// Update animeList
+	if err := db.Find(nil).All(&animeList); err != nil {
+		log.Println("Can't find any animes")
+	}
 
 	// Serve template with animeList
 	templ.Execute(w, animeList)
@@ -44,20 +49,25 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Could not add beacuse: %v\n", err)
 	}
 	log.Println("Adding anime", r.Form)
+
+	// Redirect to root
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
 func ActionHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
-	// Both do nothing. They just print to the console what they shourd do
-	if r.FormValue("Increment") != "" {
-		log.Println("Trying to increment")
-		// if err := Increment( ... ); err != nil { ...
+	if r.FormValue("Increment") == "" {
+		log.Println("Incrementing: " + r.Form["Title"][0])
+		if err := Increment(r.Form["Title"][0]); err != nil {
+			log.Println("Can't increment: %v", err)
+		}
 
-	} else if r.FormValue("Remove") != "" {
-		log.Println("Trying to remove")
-		// if err := Remove( ... ); err != nil { ...
+	} else if r.FormValue("Remove") == "" {
+		log.Println("Removing " + r.Form["Title"][0])
+		if err := Remove(r.Form["Title"][0]); err != nil {
+			log.Println("Can't remove: %v", err)
+		}
 	}
 	// Redirect to root
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)

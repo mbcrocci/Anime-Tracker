@@ -59,16 +59,6 @@ func RunCli() {
 				RunWeb()
 			},
 		},
-		{
-			Name:      "window",
-			ShortName: "q",
-			Usage:     "Start a qml app",
-			Action: func(c *cli.Context) {
-				if err := RunQmlApp(); err != nil {
-					fmt.Printf("Can't start qml app beacuse: %v\n", err)
-				}
-			},
-		},
 	}
 
 	app.RunAndExitOnError()
