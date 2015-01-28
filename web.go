@@ -8,10 +8,12 @@ import (
 	"text/template"
 )
 
-func RunWeb() {
+func RunWeb() error {
 	log.Println("Starting server on http://localhost:3000")
 
+	// Make css stylesheets work
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	// Root Hanlder
 	http.HandleFunc("/", IndexHandler)
 
@@ -25,6 +27,8 @@ func RunWeb() {
 	http.HandleFunc("/remove", RemoveHandler)
 
 	http.ListenAndServe(":3000", nil)
+
+	return nil
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -62,12 +66,13 @@ func IncrementHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	if r.FormValue("Increment") == "" {
-		log.Println("Incrementing: " + r.Form["Title"][0])
+		log.Println("Incrementing: ", r.Form)
 		if err := Increment(r.Form["Title"][0]); err != nil {
 			log.Println("Can't increment: %v", err)
 		}
 
 	}
+
 	// Redirect to root
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
@@ -76,11 +81,12 @@ func RemoveHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	if r.FormValue("Remove") == "" {
-		log.Println("Removing " + r.Form["Title"][0])
+		log.Println("Removing ", r.Form)
 		if err := Remove(r.Form["Title"][0]); err != nil {
 			log.Println("Can't remove: %v", err)
 		}
 	}
+
 	// Redirect to root
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }

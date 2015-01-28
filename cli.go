@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/codegangsta/cli"
 )
@@ -17,7 +17,7 @@ func RunCli() {
 			Usage:     "Add a new anime to the database",
 			Action: func(c *cli.Context) {
 				if err := addAnime(c.Args().First(), c.Args()[1]); err != nil {
-					fmt.Printf("Can't add new anime because: %v\n", err)
+					log.Printf("Can't add new anime because: %v\n", err)
 				}
 			},
 		},
@@ -27,7 +27,7 @@ func RunCli() {
 			Usage:     "Remove an anime",
 			Action: func(c *cli.Context) {
 				if err := Remove(c.Args().First()); err != nil {
-					fmt.Printf("Can't Remove because: %v", err)
+					log.Printf("Can't Remove because: %v", err)
 				}
 			},
 		},
@@ -37,7 +37,7 @@ func RunCli() {
 			Usage:     "Show all anime in the database",
 			Action: func(c *cli.Context) {
 				for _, anime := range animeList {
-					fmt.Printf("Title: %s\nEpisode: %s\n\n", anime.Title, anime.Episode)
+					log.Printf("Title: %s\nEpisode: %s\n\n", anime.Title, anime.Episode)
 				}
 			},
 		},
@@ -47,7 +47,7 @@ func RunCli() {
 			Usage:     "Increment the last viewed episode",
 			Action: func(c *cli.Context) {
 				if err := Increment(c.Args().First()); err != nil {
-					fmt.Printf("Cant increment because: %v", err)
+					log.Printf("Cant increment because: %v", err)
 				}
 			},
 		},
@@ -56,7 +56,9 @@ func RunCli() {
 			ShortName: "w",
 			Usage:     "Start a server that serves the anime database",
 			Action: func(c *cli.Context) {
-				RunWeb()
+				if err := RunWeb(); err != nil {
+					log.Println("Can't start server: %v", err)
+				}
 			},
 		},
 	}

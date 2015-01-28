@@ -2,9 +2,10 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"strconv"
+
+	"log"
 
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
@@ -79,7 +80,7 @@ func Remove(title string) error {
 func main() {
 	session, err := mgo.Dial(os.Getenv("MONGO_URL"))
 	if err != nil {
-		fmt.Printf("Can't connect to mongo\n")
+		log.Println("Can't connect to mongo")
 		os.Exit(1)
 	}
 	defer session.Close()
@@ -90,7 +91,7 @@ func main() {
 
 	// Populate the animeList
 	if err := db.Find(nil).All(&animeList); err != nil {
-		fmt.Printf("Can't find any animes")
+		log.Println("Can't find any animes")
 	}
 
 	// Run the cli app (cli.go)
