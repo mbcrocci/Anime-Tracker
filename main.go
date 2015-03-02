@@ -48,6 +48,7 @@ func addAnime(title, episode string) error {
 	return nil
 }
 
+// (TODO):Optimize search
 func Increment(title string) error {
 	for _, anime := range animeList {
 		if anime.Title == title {
@@ -65,6 +66,7 @@ func Increment(title string) error {
 	return errors.New("Can't find anime: " + title)
 }
 
+// Searches for the title, sees what id it has, and then uses it to remove.
 func Remove(title string) error {
 	for _, anime := range animeList {
 		if anime.Title == title {
