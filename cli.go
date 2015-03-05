@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/codegangsta/cli"
@@ -36,9 +37,19 @@ func RunCli() {
 			ShortName: "s",
 			Usage:     "Show all anime in the database",
 			Action: func(c *cli.Context) {
-				for _, anime := range animeList {
-					log.Printf("Title: %s\nEpisode: %s\n\n", anime.Title, anime.Episode)
+				if c.Args().First() != "" {
+					anime, err := Search(c.Args().First())
+					if err != nil {
+						log.Println(err)
+					}
+					fmt.Printf("Title: %s\nEpisode: %d\n\n", anime.Title, anime.Episode)
+
+				} else {
+					for _, anime := range animeList {
+						fmt.Printf("Title: %s\nEpisode: %d\n\n", anime.Title, anime.Episode)
+					}
 				}
+
 			},
 		},
 		{

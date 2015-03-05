@@ -35,7 +35,7 @@ func (a *Anime) ChangeEpisode(episode int) {
 func addAnime(title, episode string) error {
 	ep, err := strconv.Atoi(episode)
 	if err != nil {
-		return errors.New("Can't conver " + episode + "to string")
+		return errors.New("Can't convert " + episode + "to string")
 	}
 	err = db.Insert(Anime{
 		Id:      bson.NewObjectId(),
@@ -48,35 +48,45 @@ func addAnime(title, episode string) error {
 	return nil
 }
 
-// (TODO):Optimize search
-func Increment(title string) error {
+func Search(title string) (Anime, error) {
 	for _, anime := range animeList {
 		if anime.Title == title {
-			anime.Increment()
-
-			err := db.Update(
-				bson.M{"title": anime.Title},
-				bson.M{"$set": bson.M{"episode": anime.Episode}})
-			if err != nil {
-				return err
-			}
-			return nil
+			return anime, nil
 		}
 	}
-	return errors.New("Can't find anime: " + title)
+	err := errors.New("Can't find anime: " + title)
+	return Anime{bson.NewObjectId(), "err", 0}, err
+}
+
+func Increment(title string) error {
+	a, err := Search(title)
+	if err != nil {
+		return errors.New("Can't find anime: " + title)
+	}
+
+	a.Increment()
+
+	err = db.Update(
+		bson.M{"title": a.Title},
+		bson.M{"$set": bson.M{"episode": a.Episode}})
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
 
 // Searches for the title, sees what id it has, and then uses it to remove.
 func Remove(title string) error {
-	for _, anime := range animeList {
-		if anime.Title == title {
-			if err := db.RemoveId(anime.Id); err != nil {
-				return err
-			}
-			return nil
-		}
+	a, err := Search(title)
+	if err != nil {
+		return err
 	}
-	return errors.New("Can't find anime: " + title)
+
+	if err = db.RemoveId(a.Id); err != nil {
+		return err
+	}
+	return nil
 }
 
 func main() {
