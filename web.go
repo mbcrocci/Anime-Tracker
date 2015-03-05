@@ -24,8 +24,11 @@ func RunWeb() error {
 	// Root Hanlder
 	r.HandleFunc("/", IndexHandler)
 
-	// Add new anime handler
-	r.HandleFunc("/addAnime", AddHandler)
+	// New page to add an anime with a form
+	r.HandleFunc("/newAnime", newHandler)
+
+	// Add handler
+	r.HandleFunc("/add", AddHandler)
 
 	// Increment handler
 	r.HandleFunc("/increment", IncrementHandler)
@@ -59,6 +62,18 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Serve template with animeList
 	templ.Execute(w, animeList)
+}
+
+func newHandler(w http.ResponseWriter, r *http.Request) {
+	path := os.Getenv("GOPATH") + "/src/github.com/mbcrocci/Anime-Tracker/"
+	newPage, err := ioutil.ReadFile(path + "templates/new.html")
+	if err != nil {
+		log.Println("Error: ", err)
+	}
+
+	var templ = template.Must(template.New("newPage").Parse(string(newPage[:])))
+
+	templ.Execute(w, nil)
 }
 
 // Reads the form on top of the page and inserts the anime into the database
